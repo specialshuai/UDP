@@ -22,6 +22,7 @@ int main(int argc, char **argv)
 	int iRet;
 	unsigned char ucSendBuf[1000];
 	int iSendLen;
+	int iAddrLen;
 
 	if (argc != 2)
 	{
@@ -42,19 +43,27 @@ int main(int argc, char **argv)
 	}
 	memset(tSocketServerAddr.sin_zero, 0, 8);
 
-
+#if 0
 	iRet = connect(iSocketClient, (const struct sockaddr *)&tSocketServerAddr, sizeof(struct sockaddr));	
 	if (-1 == iRet)
 	{
 		printf("connect error!\n");
 		return -1;
 	}
+#endif
 
 	while (1)
 	{
 		if (fgets(ucSendBuf, 999, stdin))
 		{
+#if 0
 			iSendLen = send(iSocketClient, ucSendBuf, strlen(ucSendBuf), 0);
+#else
+			iAddrLen = sizeof(struct sockaddr);
+			iSendLen = sendto(iSocketClient, ucSendBuf, strlen(ucSendBuf), 0,
+			                      (const struct sockaddr *)&tSocketServerAddr, iAddrLen);
+
+#endif
 			if (iSendLen <= 0)
 			{
 				close(iSocketClient);
